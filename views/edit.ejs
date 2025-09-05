@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post - Quora Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f7f7f8;
+            color: #333;
+        }
+        
+        .header {
+            background-color: #b92b27;
+            padding: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .edit-form {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .form-header {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .form-header h1 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #b92b27;
+            box-shadow: 0 0 0 3px rgba(185, 43, 39, 0.1);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #b92b27;
+            box-shadow: 0 0 0 3px rgba(185, 43, 39, 0.1);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: #b92b27;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #a02622;
+        }
+        
+        .btn-secondary {
+            background-color: #e2e8f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #cbd5e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav">
+            <a href="/posts" class="logo">Quora</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="edit-form">
+            <div class="form-header">
+                <h1>Edit Post</h1>
+            </div>
+            
+            <form method="POST" action="/posts/<%= post.id %>?_method=PATCH">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" id="username" value="<%= post.username %>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <select name="category" id="category" style="width: 100%; padding: 12px 16px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px;" required>
+                        <option value="Technology" <%= post.category === 'Technology' ? 'selected' : '' %>>Technology</option>
+                        <option value="AI" <%= post.category === 'AI' ? 'selected' : '' %>>AI & Machine Learning</option>
+                        <option value="Education" <%= post.category === 'Education' ? 'selected' : '' %>>Education</option>
+                        <option value="Science" <%= post.category === 'Science' ? 'selected' : '' %>>Science</option>
+                        <option value="Programming" <%= post.category === 'Programming' ? 'selected' : '' %>>Programming</option>
+                        <option value="Design" <%= post.category === 'Design' ? 'selected' : '' %>>Design</option>
+                        <option value="Finance" <%= post.category === 'Finance' ? 'selected' : '' %>>Finance</option>
+                        <option value="Health" <%= post.category === 'Health' ? 'selected' : '' %>>Health</option>
+                        <option value="Security" <%= post.category === 'Security' ? 'selected' : '' %>>Security</option>
+                        <option value="Productivity" <%= post.category === 'Productivity' ? 'selected' : '' %>>Productivity</option>
+                        <option value="General" <%= post.category === 'General' ? 'selected' : '' %>>General</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content">Content:</label>
+                    <textarea name="content" id="content" required><%= post.content %></textarea>
+                    <div style="font-size: 12px; color: #666; margin-top: 8px;">
+                        Current tags: <% if (post.tags) { %><% post.tags.forEach(tag => { %>#<%= tag %> <% }); %><% } %>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Post</button>
+                    <a href="/posts/<%= post.id %>" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

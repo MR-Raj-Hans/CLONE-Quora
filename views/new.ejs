@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask Question - Quora Clone</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 80px auto 40px;
+            padding: 0 20px;
+        }
+        
+        .question-form {
+            background-color: #1f1f1f;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 32px;
+        }
+        
+        .form-header {
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .form-header h1 {
+            color: #e2e8f0;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-header p {
+            color: #999;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #2d2d2d;
+            color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #b92b27;
+            background-color: #333;
+            box-shadow: 0 0 0 3px rgba(185, 43, 39, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #999;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #404040;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #2d2d2d;
+            color: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: #b92b27;
+            background-color: #333;
+        }
+        
+        .form-help {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #333;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        
+        .btn-primary {
+            background-color: #b92b27;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #a02622;
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background-color: #2d2d2d;
+            color: #e2e8f0;
+            border: 1px solid #404040;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #404040;
+            border-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/posts" class="navbar-logo">
+                <i class="fab fa-quora"></i>
+                Quora
+            </a>
+            
+            <div class="navbar-search">
+                <form method="GET" action="/posts">
+                    <input type="text" name="search" placeholder="Search Quora">
+                </form>
+            </div>
+            
+            <div class="navbar-icons">
+                <a href="/posts" class="navbar-icon" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Answer">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Spaces">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Notifications">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Messages">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="form-container">
+        <div class="question-form">
+            <div class="form-header">
+                <h1><i class="fas fa-question-circle"></i> Ask a Question</h1>
+                <p>Share your knowledge and help the community learn something new</p>
+            </div>
+            
+            <form method="post" action="/posts/">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user"></i> Your Name
+                    </label>
+                    <input type="text" name="username" id="username" class="form-input" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category" class="form-label">
+                        <i class="fas fa-tag"></i> Category
+                    </label>
+                    <select name="category" id="category" class="form-select" required>
+                        <option value="">Select a category</option>
+                        <option value="Technology">💻 Technology</option>
+                        <option value="AI">🤖 AI & Machine Learning</option>
+                        <option value="Education">🎓 Education</option>
+                        <option value="Science">🔬 Science</option>
+                        <option value="Programming">💾 Programming</option>
+                        <option value="Design">🎨 Design</option>
+                        <option value="Finance">💰 Finance</option>
+                        <option value="Health">💊 Health</option>
+                        <option value="Security">🔒 Security</option>
+                        <option value="Productivity">⚡ Productivity</option>
+                        <option value="General">📝 General</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="content" class="form-label">
+                        <i class="fas fa-edit"></i> Your Question
+                    </label>
+                    <textarea name="content" id="content" class="form-input form-textarea" placeholder="What would you like to know? Be specific and clear...
+
+💡 Pro tip: Use #hashtags to categorize your post better!" required></textarea>
+                    <div class="form-help">
+                        <i class="fas fa-lightbulb"></i>
+                        You can use #hashtags in your content to auto-generate tags!
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Post Question
+                    </button>
+                    <a href="/posts" class="btn btn-secondary">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

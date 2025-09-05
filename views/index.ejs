@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quora Clone - Modern Q&A Platform</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+</head>
+<body>
+    <!-- Reading Progress Bar -->
+    <div class="reading-progress" id="readingProgress"></div>
+    
+    <!-- Interactive Background -->
+    <div class="interactive-bg" id="interactiveBg"></div>
+    
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <button class="theme-btn dark" onclick="switchTheme('dark')" title="Dark Theme">
+            <i class="fas fa-moon"></i>
+        </button>
+        <button class="theme-btn blue" onclick="switchTheme('blue')" title="Ocean Theme">
+            <i class="fas fa-water"></i>
+        </button>
+        <button class="theme-btn neon" onclick="switchTheme('neon')" title="Neon Theme">
+            <i class="fas fa-bolt"></i>
+        </button>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/posts" class="navbar-logo">
+                <i class="fab fa-quora"></i>
+                Quora
+            </a>
+            
+            <!-- Real-time Collaboration Indicator -->
+            <div class="collaboration-indicator">
+                <div class="live-dot"></div>
+                <span id="activeUsers">3 users online</span>
+            </div>
+            
+            <div class="navbar-search voice-input">
+                <form method="GET" action="/posts">
+                    <input type="text" name="search" placeholder="Search questions..." value="<%= currentSearch %>" id="smartSearch">
+                    <button type="button" class="voice-button" onclick="startVoiceSearch()" title="Voice Search">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </form>
+                <!-- Smart Suggestions -->
+                <div class="content-suggestions hidden" id="searchSuggestions"></div>
+            </div>
+            
+            <div class="navbar-icons">
+                <a href="/posts" class="navbar-icon" title="Home">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Answer">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Spaces">
+                    <i class="fas fa-users"></i>
+                </a>
+                <a href="#" class="navbar-icon" title="Notifications" onclick="showNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge">2</span>
+                </a>
+                <a href="#" class="navbar-icon" title="Messages">
+                    <i class="fas fa-globe"></i>
+                </a>
+                <a href="/post/new" class="navbar-btn">Add question</a>
+                <div class="user-avatar" onclick="showUserMenu()">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- User Cursors for Real-time Collaboration -->
+    <div class="user-cursors" id="userCursors"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <a href="#" class="create-space-btn" onclick="createSpace()">
+                <i class="fas fa-plus"></i>
+                Create Space
+            </a>
+            
+            <div class="sidebar-section">
+                <a href="/posts" class="sidebar-item active" data-category="music">
+                    <span class="sidebar-icon">🎵</span>
+                    Music
+                    <span class="category-count">247</span>
+                </a>
+                <a href="/posts?category=Cooking" class="sidebar-item" data-category="cooking">
+                    <span class="sidebar-icon">🍳</span>
+                    Cooking
+                    <span class="category-count">156</span>
+                </a>
+                <a href="/posts?category=History" class="sidebar-item" data-category="history">
+                    <span class="sidebar-icon">📚</span>
+                    History
+                    <span class="category-count">89</span>
+                </a>
+                <a href="/posts?category=Movies" class="sidebar-item" data-category="movies">
+                    <span class="sidebar-icon">🎬</span>
+                    Movies
+                    <span class="category-count">324</span>
+                </a>
+                <a href="/posts?category=Health" class="sidebar-item" data-category="health">
+                    <span class="sidebar-icon">💊</span>
+                    Health
+                    <span class="category-count">198</span>
+                </a>
+                <a href="/posts?category=Education" class="sidebar-item" data-category="education">
+                    <span class="sidebar-icon">🎓</span>
+                    Colleges and Universities
+                    <span class="category-count">412</span>
+                </a>
+                <a href="/posts?category=Career" class="sidebar-item" data-category="career">
+                    <span class="sidebar-icon">💼</span>
+                    College Admissions
+                    <span class="category-count">278</span>
+                </a>
+                <a href="/posts?category=Career" class="sidebar-item" data-category="advice">
+                    <span class="sidebar-icon">📋</span>
+                    Career Advice
+                    <span class="category-count">534</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Feed -->
+        <main class="main-feed">
+            <!-- Ask Question Box -->
+            <div class="ask-question-container">
+                <div class="ask-question-header">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="ask-question-input" onclick="openComposer()">
+                        What do you want to ask or share?
+                    </div>
+                </div>
+                <div class="ask-question-actions">
+                    <a href="/post/new" class="ask-action ask">
+                        <i class="fas fa-question-circle"></i>
+                        Ask
+                    </a>
+                    <a href="#" class="ask-action" onclick="openAnswerMode()">
+                        <i class="fas fa-edit"></i>
+                        Answer
+                    </a>
+                    <a href="#" class="ask-action" onclick="openPostMode()">
+                        <i class="fas fa-plus"></i>
+                        Post
+                    </a>
+                </div>
+            </div>
+
+            <!-- Posts Feed -->
+            <% if (posts.length === 0) { %>
+                <div class="no-posts-message">
+                    <div class="no-posts-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>No posts found</h3>
+                    <p>Try adjusting your search or filters, or be the first to ask a question!</p>
+                    <a href="/post/new" class="cta-button">
+                        <i class="fas fa-plus"></i>
+                        Ask the first question
+                    </a>
+                </div>
+            <% } else { %>
+            <% for (let post of posts) { %>
+                <article class="post-card" data-post-id="<%= post.id %>"></article>
+                    <div class="post-close" onclick="hidePost('<%= post.id %>')">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    
+                    <div class="post-header">
+                        <div class="post-author">
+                            <div class="author-avatar">
+                                <%= post.username.charAt(0).toUpperCase() %>
+                            </div>
+                            <div class="author-info">
+                                <h3><%= post.username %> · <span style="color: #4a90e2; cursor: pointer;" onclick="followUser('<%= post.username %>')">Follow</span></h3>
+                                <p><%= post.category %> · <%= new Date(post.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-content">
+                        <div class="post-text">
+                            <%= post.content %>
+                        </div>
+                        
+                        <!-- Smart Reactions -->
+                        <div class="smart-reactions">
+                            <button class="reaction-btn" onclick="addReaction('<%= post.id %>', 'insightful')">
+                                💡 Insightful
+                            </button>
+                            <button class="reaction-btn" onclick="addReaction('<%= post.id %>', 'helpful')">
+                                🙌 Helpful
+                            </button>
+                            <button class="reaction-btn" onclick="addReaction('<%= post.id %>', 'interesting')">
+                                🤔 Interesting
+                            </button>
+                            <button class="reaction-btn" onclick="addReaction('<%= post.id %>', 'inspiring')">
+                                ⭐ Inspiring
+                            </button>
+                        </div>
+                        
+                        <!-- Featured image demonstration -->
+                        <% if (post.id === '1a' || post.id === '6f') { %>
+                            <div class="post-image" style="background: linear-gradient(135deg, #667eea, #764ba2); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; border-radius: 12px; font-size: 10px;">
+                                    Featured
+                                </div>
+                                <i class="fas fa-image" style="font-size: 48px; color: white;"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                    
+                    <div class="post-actions">
+                        <div class="post-actions-left">
+                            <button class="post-action" onclick="likePost('<%= post.id %>')" id="like-<%= post.id %>">
+                                <i class="fas fa-arrow-up"></i>
+                                Upvote
+                                <span id="count-<%= post.id %>"><%= Math.floor(post.upvotes / 1000) %>k</span>
+                            </button>
+                            <button class="post-action" onclick="bookmarkPost('<%= post.id %>')">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <a href="/posts/<%= post.id %>" class="post-action">
+                                <i class="fas fa-comment"></i>
+                                <%= post.answers %>
+                            </a>
+                            <button class="post-action" onclick="sharePost('<%= post.id %>')">
+                                <i class="fas fa-share"></i>
+                                <%= Math.floor(Math.random() * 50) + 10 %>
+                            </button>
+                            <button class="post-action" onclick="showPostMenu('<%= post.id %>')">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            <% } %>
+            <% } %>
+        </main>
+
+        <!-- Right Sidebar -->
+        <aside class="right-sidebar">
+            <!-- Analytics Dashboard -->
+            <div class="ad-container">
+                <div class="ad-header">
+                    <i class="fas fa-chart-line" style="color: #667eea;"></i>
+                    <span class="ad-title">Analytics</span>
+                </div>
+                <div style="padding: 16px 0;">
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span style="color: #999; font-size: 12px;">Your Impact</span>
+                            <span style="color: #22c55e; font-size: 12px;">+15%</span>
+                        </div>
+                        <div style="height: 6px; background: #333; border-radius: 3px; overflow: hidden;">
+                            <div style="height: 100%; width: 75%; background: linear-gradient(90deg, #22c55e, #16a34a); animation: progressFill 2s ease-out;"></div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px;">
+                        <div style="text-align: center; padding: 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">
+                            <div style="color: #22c55e; font-weight: bold;">142</div>
+                            <div style="color: #999;">Views Today</div>
+                        </div>
+                        <div style="text-align: center; padding: 8px; background: rgba(59, 130, 246, 0.1); border-radius: 6px;">
+                            <div style="color: #3b82f6; font-weight: bold;">23</div>
+                            <div style="color: #999;">Interactions</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advertisement Section -->
+            <div class="ad-container">
+                <div class="ad-header">
+                    <i class="fas fa-info-circle" style="color: #666;"></i>
+                    <span class="ad-brand">Movavi</span>
+                </div>
+                <div class="ad-content">
+                    <h3>COLOR CORRECTION</h3>
+                    <p>Edit Video In 5 Minutes</p>
+                    <a href="#" class="ad-btn" onclick="trackAdClick()">Download</a>
+                </div>
+                <div class="ad-footer">
+                    <span class="ad-footer-text">Advertisement</span>
+                </div>
+            </div>
+
+            <!-- Trending Topics -->
+            <div class="ad-container">
+                <div class="ad-header">
+                    <span class="ad-title">🔥 Trending</span>
+                </div>
+                <% trendingPosts.slice(0, 5).forEach((post, index) => { %>
+                    <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #333;" onclick="navigateToPost('<%= post.id %>')">
+                        <a href="/posts/<%= post.id %>" style="color: #e2e8f0; text-decoration: none; font-size: 14px; line-height: 1.4;">
+                            <%= post.content.substring(0, 80) %>...
+                        </a>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px; display: flex; justify-content: space-between;">
+                            <span>
+                                <i class="fas fa-arrow-up"></i> <%= post.upvotes %> • 
+                                <i class="fas fa-eye"></i> <%= post.views %>
+                            </span>
+                            <span style="color: #667eea;">Trending</span>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="ad-container">
+                <div class="ad-header">
+                    <span class="ad-title">📊 Live Stats</span>
+                    <button onclick="refreshStats()" style="background: none; border: none; color: #667eea; cursor: pointer;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div style="color: #999; font-size: 14px; line-height: 1.8;" id="liveStats">
+                    <div>📝 Total Posts: <span style="color: #e2e8f0;"><%= posts.length %></span></div>
+                    <div>👥 Active Users: <span style="color: #e2e8f0;"><%= new Set(posts.map(p => p.username)).size %></span></div>
+                    <div>👁️ Total Views: <span style="color: #e2e8f0;"><%= posts.reduce((sum, p) => sum + p.views, 0) %></span></div>
+                    <div>💬 Total Answers: <span style="color: #667eea;">1.2k</span></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Advanced AI-Powered Features
+        
+        // Global state
+        let currentTheme = 'dark';
+        let isAIAssistantOpen = false;
+        let isVoiceRecording = false;
+        let userCursors = new Map();
+        let smartSuggestions = [];
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeInteractiveBackground();
+            initializeReadingProgress();
+            initializeSmartSearch();
+            simulateRealTimeCollaboration();
+            initializeGSAPAnimations();
+            initializeKeyboardShortcuts();
+        });
+        
+        // Interactive Background with Particles
+        function initializeInteractiveBackground() {
+            const bg = document.getElementById('interactiveBg');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                bg.appendChild(particle);
+            }
+            
+            // Mouse interaction
+            document.addEventListener('mousemove', (e) => {
+                const particles = document.querySelectorAll('.particle');
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+                
+                particles.forEach((particle, index) => {
+                    if (index % 5 === 0) { // Only affect every 5th particle for performance
+                        const x = (mouseX - 0.5) * 20;
+                        const y = (mouseY - 0.5) * 20;
+                        particle.style.transform = `translate(${x}px, ${y}px)`;
+                    }
+                });
+            });
+        }
+        
+        // Reading Progress Bar
+        function initializeReadingProgress() {
+            const progressBar = document.getElementById('readingProgress');
+            
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.body.offsetHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                progressBar.style.width = scrollPercent + '%';
+            });
+        }
+        
+        // AI-Powered Smart Search
+        function initializeSmartSearch() {
+            const searchInput = document.getElementById('smartSearch');
+            const suggestionsDiv = document.getElementById('searchSuggestions');
+            
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value;
+                
+                if (query.length > 2) {
+                    searchTimeout = setTimeout(() => {
+                        generateSmartSuggestions(query);
+                    }, 300);
+                } else {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+            
+            // Close suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.navbar-search')) {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        }
+        
+        function generateSmartSuggestions(query) {
+            // Simulate AI-powered suggestions
+            const suggestions = [
+                { text: `"${query}" in Technology`, type: 'category', meta: 'AI-suggested category' },
+                { text: `How to ${query}?`, type: 'question', meta: 'Popular question format' },
+                { text: `${query} explained simply`, type: 'content', meta: 'Trending topic' },
+                { text: `Best practices for ${query}`, type: 'guide', meta: 'Expert insights' },
+                { text: `${query} vs alternatives`, type: 'comparison', meta: 'Comprehensive analysis' }
+            ];
+            
+            displaySearchSuggestions(suggestions);
+        }
+        
+        function displaySearchSuggestions(suggestions) {
+            const suggestionsDiv = document.getElementById('searchSuggestions');
+            suggestionsDiv.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.onclick = () => selectSuggestion(suggestion.text);
+                item.innerHTML = `
+                    <div class="suggestion-text">${suggestion.text}</div>
+                    <div class="suggestion-meta">${suggestion.meta}</div>
+                `;
+                suggestionsDiv.appendChild(item);
+            });
+            
+            suggestionsDiv.classList.remove('hidden');
+        }
+        
+        function selectSuggestion(text) {
+            document.getElementById('smartSearch').value = text;
+            document.getElementById('searchSuggestions').classList.add('hidden');
+            // Auto-submit search
+            document.querySelector('.navbar-search form').submit();
+        }
+        
+        // Real-time Collaboration Simulation
+        function simulateRealTimeCollaboration() {
+            const users = ['Alice', 'Bob', 'Charlie'];
+            const colors = ['#667eea', '#f093fb', '#4facfe'];
+            
+            // Update active users count
+            setInterval(() => {
+                const count = Math.floor(Math.random() * 10) + 2;
+                document.getElementById('activeUsers').textContent = `${count} users online`;
+            }, 15000);
+            
+            // Simulate user cursors
+            setInterval(() => {
+                simulateUserCursor();
+            }, 3000);
+        }
+        
+        function simulateUserCursor() {
+            const cursorsContainer = document.getElementById('userCursors');
+            const user = ['Alice', 'Bob', 'Charlie'][Math.floor(Math.random() * 3)];
+            const color = ['#667eea', '#f093fb', '#4facfe'][Math.floor(Math.random() * 3)];
+            
+            const cursor = document.createElement('div');
+            cursor.className = 'user-cursor';
+            cursor.innerHTML = `
+                <div class="cursor-pointer" style="border-left-color: ${color};"></div>
+                <div class="cursor-label" style="background: ${color};">${user}</div>
+            `;
+            
+            // Random position
+            cursor.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+            cursor.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+            
+            cursorsContainer.appendChild(cursor);
+            
+            // Animate cursor movement
+            setTimeout(() => {
+                cursor.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+                cursor.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+            }, 1000);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                cursor.remove();
+            }, 3000);
+        }
+        
+        // GSAP Animations
+        function initializeGSAPAnimations() {
+            // Animate post cards on scroll
+            gsap.registerPlugin(ScrollTrigger);
+            
+            gsap.from('.post-card', {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: 'power2.out',
+                scrollTrigger: {
+                    trigger: '.main-feed',
+                    start: 'top 80%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+            
+            // Animate sidebar items
+            gsap.from('.sidebar-item', {
+                x: -30,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: 'power2.out'
+            });
+        }
+        
+        // Voice Search
+        function startVoiceSearch() {
+            const button = document.querySelector('.voice-button');
+            
+            if (!isVoiceRecording) {
+                if ('webkitSpeechRecognition' in window) {
+                    const recognition = new webkitSpeechRecognition();
+                    recognition.continuous = false;
+                    recognition.interimResults = false;
+                    recognition.lang = 'en-US';
+                    
+                    recognition.onstart = () => {
+                        isVoiceRecording = true;
+                        button.classList.add('recording');
+                        button.innerHTML = '<i class="fas fa-stop"></i>';
+                    };
+                    
+                    recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('smartSearch').value = transcript;
+                        generateSmartSuggestions(transcript);
+                    };
+                    
+                    recognition.onend = () => {
+                        isVoiceRecording = false;
+                        button.classList.remove('recording');
+                        button.innerHTML = '<i class="fas fa-microphone"></i>';
+                    };
+                    
+                    recognition.start();
+                } else {
+                    showNotification('Voice search not supported in this browser', 'warning');
+                }
+            }
+        }
+        
+        // Theme Switcher
+        function switchTheme(theme) {
+            currentTheme = theme;
+            const body = document.body;
+            
+            // Remove existing theme classes
+            body.classList.remove('theme-dark', 'theme-blue', 'theme-neon');
+            
+            // Apply new theme
+            body.classList.add(`theme-${theme}`);
+            
+            // Update CSS variables based on theme
+            const root = document.documentElement;
+            switch(theme) {
+                case 'blue':
+                    root.style.setProperty('--primary-bg', '#0f172a');
+                    root.style.setProperty('--secondary-bg', '#1e293b');
+                    root.style.setProperty('--accent-color', '#3b82f6');
+                    break;
+                case 'neon':
+                    root.style.setProperty('--primary-bg', '#0a0a0a');
+                    root.style.setProperty('--secondary-bg', '#1a1a1a');
+                    root.style.setProperty('--accent-color', '#ff006e');
+                    break;
+                default:
+                    root.style.setProperty('--primary-bg', '#181818');
+                    root.style.setProperty('--secondary-bg', '#1f1f1f');
+                    root.style.setProperty('--accent-color', '#b92b27');
+            }
+            
+            showNotification(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme activated!`, 'success');
+        }
+        
+        // Enhanced Interactions
+        
+        // Enhanced Interactions
+        function likePost(postId) {
+            fetch(`/posts/${postId}/like`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const countElement = document.getElementById(`count-${postId}`);
+                const buttonElement = document.getElementById(`like-${postId}`);
+                
+                countElement.textContent = Math.floor(data.upvotes / 1000) + 'k';
+                buttonElement.classList.add('upvoted');
+                
+                // Enhanced animation
+                gsap.to(buttonElement, {
+                    scale: 1.2,
+                    duration: 0.1,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: 'power2.inOut'
+                });
+                
+                // Particle effect
+                createLikeParticles(buttonElement);
+                
+                trackEvent('Post_Liked', { postId, timestamp: Date.now() });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        function createLikeParticles(element) {
+            const rect = element.getBoundingClientRect();
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: fixed;
+                    width: 4px;
+                    height: 4px;
+                    background: #667eea;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 1000;
+                    left: ${rect.left + rect.width/2}px;
+                    top: ${rect.top + rect.height/2}px;
+                `;
+                document.body.appendChild(particle);
+                
+                gsap.to(particle, {
+                    x: (Math.random() - 0.5) * 100,
+                    y: (Math.random() - 0.5) * 100,
+                    opacity: 0,
+                    duration: 1,
+                    ease: 'power2.out',
+                    onComplete: () => particle.remove()
+                });
+            }
+        }
+        
+        // Smart Reactions
+        function addReaction(postId, reaction) {
+            const button = event.target;
+            button.classList.toggle('active');
+            
+            // Animate reaction
+            gsap.to(button, {
+                scale: 1.1,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1
+            });
+            
+            showNotification(`Added ${reaction} reaction!`, 'success');
+            trackEvent('Reaction_Added', { postId, reaction });
+        }
+        
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: ${type === 'success' ? '#22c55e' : type === 'warning' ? '#f59e0b' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1001;
+                font-size: 14px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        function trackEvent(eventName, data = {}) {
+            console.log(`📊 Analytics: ${eventName}`, data);
+            // In real app, send to analytics service
+        }
+        
+        // Enhanced interactions
+        function followUser(username) {
+            showNotification(`Now following ${username}!`, 'success');
+            trackEvent('User_Followed', { username });
+        }
+        
+        function sharePost(postId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this post',
+                    url: `${window.location.origin}/posts/${postId}`
+                });
+            } else {
+                navigator.clipboard.writeText(`${window.location.origin}/posts/${postId}`);
+                showNotification('Link copied to clipboard!', 'success');
+            }
+            trackEvent('Post_Shared', { postId });
+        }
+        
+        function refreshStats() {
+            const statsDiv = document.getElementById('liveStats');
+            
+            // Animate refresh
+            gsap.to(statsDiv, {
+                opacity: 0.5,
+                scale: 0.95,
+                duration: 0.2,
+                yoyo: true,
+                repeat: 1
+            });
+            
+            // Simulate updated stats
+            setTimeout(() => {
+                showNotification('Stats refreshed!', 'success');
+            }, 400);
+        }
+        
+        // Keyboard Shortcuts
+        function initializeKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case 'k':
+                            e.preventDefault();
+                            document.getElementById('smartSearch').focus();
+                            break;
+                        case 'n':
+                            e.preventDefault();
+                            window.location.href = '/post/new';
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // Initialize tooltips
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add keyboard shortcut hints
+            document.getElementById('smartSearch').setAttribute('title', 'Ctrl+K to focus');
+            
+            // Initialize page features
+            initializeInteractiveBackground();
+            initializeReadingProgress();
+            initializeSmartSearch();
+            simulateRealTimeCollaboration();
+            initializeGSAPAnimations();
+            initializeKeyboardShortcuts();
+        });
+        
+        // Interactive Background with Particles
+        function initializeInteractiveBackground() {
+            const bg = document.getElementById('interactiveBg');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                bg.appendChild(particle);
+            }
+        }
+        
+        // Reading Progress Bar
+        function initializeReadingProgress() {
+            const progressBar = document.getElementById('readingProgress');
+            
+            window.addEventListener('scroll', () => {
+                const scrollTop = window.pageYOffset;
+                const docHeight = document.body.offsetHeight - window.innerHeight;
+                const scrollPercent = (scrollTop / docHeight) * 100;
+                progressBar.style.width = Math.min(scrollPercent, 100) + '%';
+            });
+        }
+        
+        // Smart Search
+        function initializeSmartSearch() {
+            const searchInput = document.getElementById('smartSearch');
+            const suggestionsDiv = document.getElementById('searchSuggestions');
+            
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                const query = e.target.value;
+                
+                if (query.length > 2) {
+                    searchTimeout = setTimeout(() => {
+                        generateSmartSuggestions(query);
+                    }, 300);
+                } else {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        }
+        
+        function generateSmartSuggestions(query) {
+            const suggestions = [
+                { text: `"${query}" in Technology`, meta: 'Suggested category' },
+                { text: `How to ${query}?`, meta: 'Popular question format' },
+                { text: `${query} explained simply`, meta: 'Trending topic' }
+            ];
+            
+            displaySearchSuggestions(suggestions);
+        }
+        
+        function displaySearchSuggestions(suggestions) {
+            const suggestionsDiv = document.getElementById('searchSuggestions');
+            suggestionsDiv.innerHTML = '';
+            
+            suggestions.forEach(suggestion => {
+                const item = document.createElement('div');
+                item.className = 'suggestion-item';
+                item.onclick = () => selectSuggestion(suggestion.text);
+                item.innerHTML = `
+                    <div class="suggestion-text">${suggestion.text}</div>
+                    <div class="suggestion-meta">${suggestion.meta}</div>
+                `;
+                suggestionsDiv.appendChild(item);
+            });
+            
+            suggestionsDiv.classList.remove('hidden');
+        }
+        
+        function selectSuggestion(text) {
+            document.getElementById('smartSearch').value = text;
+            document.getElementById('searchSuggestions').classList.add('hidden');
+            document.querySelector('.navbar-search form').submit();
+        }
+        
+        // Real-time Collaboration Simulation
+        function simulateRealTimeCollaboration() {
+            setInterval(() => {
+                const count = Math.floor(Math.random() * 10) + 2;
+                document.getElementById('activeUsers').textContent = `${count} users online`;
+            }, 15000);
+        }
+        
+        // GSAP Animations
+        function initializeGSAPAnimations() {
+            if (typeof gsap !== 'undefined') {
+                gsap.from('.post-card', {
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: 'power2.out'
+                });
+            }
+        }
+        
+        // Voice Search
+        function startVoiceSearch() {
+            const button = document.querySelector('.voice-button');
+            
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onstart = () => {
+                    button.classList.add('recording');
+                    button.innerHTML = '<i class="fas fa-stop"></i>';
+                };
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('smartSearch').value = transcript;
+                    generateSmartSuggestions(transcript);
+                };
+                
+                recognition.onend = () => {
+                    button.classList.remove('recording');
+                    button.innerHTML = '<i class="fas fa-microphone"></i>';
+                };
+                
+                recognition.start();
+            } else {
+                showNotification('Voice search not supported in this browser', 'warning');
+            }
+        }
+        
+        // Theme Switcher
+        function switchTheme(theme) {
+            const body = document.body;
+            body.classList.remove('theme-dark', 'theme-blue', 'theme-neon');
+            body.classList.add(`theme-${theme}`);
+            
+            showNotification(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme activated!`, 'success');
+        }
+        
+        // Enhanced Interactions
+        function bookmarkPost(postId) {
+            showNotification('Post bookmarked!', 'success');
+        }
+        
+        function addReaction(postId, reaction) {
+            const button = event.target;
+            button.classList.toggle('active');
+            showNotification(`Added ${reaction} reaction!`, 'success');
+        }
+        
+        function sharePost(postId) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this post',
+                    url: `${window.location.origin}/posts/${postId}`
+                });
+            } else {
+                navigator.clipboard.writeText(`${window.location.origin}/posts/${postId}`);
+                showNotification('Link copied to clipboard!', 'success');
+            }
+        }
+        
+        function followUser(username) {
+            showNotification(`Now following ${username}!`, 'success');
+        }
+        
+        function refreshStats() {
+            showNotification('Stats refreshed!', 'success');
+        }
+        
+        function navigateToPost(postId) {
+            window.location.href = `/posts/${postId}`;
+        }
+        
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: '#22c55e',
+                warning: '#f59e0b',
+                error: '#ef4444',
+                info: '#3b82f6'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: ${colors[type] || colors.info};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1001;
+                font-size: 14px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Keyboard Shortcuts
+        function initializeKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case 'k':
+                            e.preventDefault();
+                            document.getElementById('smartSearch').focus();
+                            break;
+                        case 'n':
+                            e.preventDefault();
+                            window.location.href = '/post/new';
+                            break;
+                    }
+                }
+            });
+        }
+        
+        // Placeholder functions for missing handlers
+        function hidePost(postId) {
+            showNotification('Post hidden', 'info');
+        }
+        
+        function showPostMenu(postId) {
+            showNotification('Post menu opened', 'info');
+        }
+        
+        function createSpace() {
+            showNotification('Create Space feature coming soon!', 'info');
+        }
+        
+        function openComposer() {
+            window.location.href = '/post/new';
+        }
+        
+        function openAnswerMode() {
+            showNotification('Answer mode activated!', 'info');
+        }
+        
+        function openPostMode() {
+            showNotification('Post mode activated!', 'info');
+        }
+        
+        function showNotifications() {
+            showNotification('You have 2 new notifications', 'info');
+        }
+        
+        function showUserMenu() {
+            showNotification('User menu opened', 'info');
+        }
+        
+        function trackAdClick() {
+            showNotification('Redirecting to download...', 'info');
+        }
+    </script>
+</body>
+</html>
